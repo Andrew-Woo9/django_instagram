@@ -62,7 +62,10 @@ def comment_add(request, post_id):
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
 
+    form = PostForm()
+
     context = {
-        'post_detail': post
+        'post_detail': post,
+        'form': form,
     }
     return render(request, 'post/post-detail.html', context)

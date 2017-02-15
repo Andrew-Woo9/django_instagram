@@ -25,10 +25,12 @@
         {% endif %}
 
         <!-- comment form -->
+
         <form action="{% url 'post:comment_add' post_id=post_detail.id %}" method="POST">{% csrf_token %}
-            <input type="text" name="content">
+            {{ form.content }}
             <button type="submit">Write Comment</button>
         </form>
+
     </div>
 </div>
 
