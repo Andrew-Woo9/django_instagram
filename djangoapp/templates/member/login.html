@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="" method="POST">{% csrf_token %}
+
+    {% if form.non_field_errors %}
+        {{ form.non_field_errors }}
+    {% endif %}
+
+    {% for field in form%}
+    <div>
+        {{ field.label_tag }}
+        {{ field }}
+        <!--<P>이름</P><P><input type="text" name="username"></P>-->
+        <!--<P>패스워드</P><P><input type="text" name="password"></P>-->
+    </div>
+    {% endfor %}
+    <div><button type="submit">login</button></div>
+</form>
+</body>
+</html>
