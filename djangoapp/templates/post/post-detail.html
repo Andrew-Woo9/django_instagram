@@ -1,7 +1,7 @@
 {% extends 'common/base.html' %}
 
 {% block content %}
-<div class="warp">
+<div class="warp_detail">
     <div class="content_box">
         <div class="img2_box">
             <div class="img_title">{{ post_detail.created_date }}</div>
@@ -30,7 +30,10 @@
             {{ form.content }}
             <button type="submit">Write Comment</button>
         </form>
-
+    </div>
+    <br>
+    <div>
+        <button type="button"><a href="{% url 'post:post' %}">목록</a></button>
     </div>
 </div>
 

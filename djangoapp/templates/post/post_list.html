@@ -2,30 +2,38 @@
 
 {% block content %}
 
+<div class="warp_list">
+
     {% for post in post_list  %}
-        <a href="{% url 'post:post_detail' post_id=post.id %}">{{ post.id }} | {{ post.author.username }}<br>
-        <img class="img" src="{{ MEDIA_URL }}{{ post.photo }}"></a><br>
-        {{ post.content|linebreaksbr }} <br>
-        {{ post.like_users.count }} likes
-        <hr>
-
-        {% if post.comment_set.all %}
-            {% for comment in post.comment_set.all %}
-             <div class="comment">
-                 {{ post.author.username }} : {{comment.content }}
-             </div>
-            {% endfor %}
-        {% else %}
-            <p>No comments</p>
-        {% endif %}
-
+        <div>
+            <div class="img_title">
+                <a href="{% url 'post:post_detail' post_id=post.id %}">{{ post.id }} | {{ post.author.username }}
+                <img class="img" src="{{ MEDIA_URL }}{{ post.photo }}">
+                </a>
+            </div>
+        </div>
+        <div class="list_content">{{ post.content|linebreaksbr }}</div>
+        <div class="list_like">{{ post.like_users.count }} likes</div>
+        <div class="list_comment">
+            {% if post.comment_set.all %}
+                {% for comment in post.comment_set.all %}
+                 <div>
+                     {{ post.author.username }} : {{comment.content }}
+                 </div>
+                {% endfor %}
+            {% else %}
+                <p>No comments</p>
+            {% endif %}
+        </div>
         <form action="" method="POST">{% csrf_token %}
             <input type="text" name="content">
             <input type="hidden" name="post_id" value="{{ post.id }}">
             <button type="submit">Write Comment</button>
         </form>
         <hr>
+        <br>
 
     {% endfor %}
 
+</div>
 {% endblock %}
