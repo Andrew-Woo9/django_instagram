@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from post.models import Post, Comment
-from .form import PostForm
+from .form import CommentForm, PostForm
 
 """
 post_list를 보여주는 화면을 구성
@@ -25,7 +25,7 @@ def post_list(request):
         post = Post.objects.all()
 
         context = {
-            'post_list': post
+            'posts': post
         }
         return render(request, 'post/post_list.html', context)
 
@@ -35,37 +35,89 @@ def post_list(request):
 def comment_add(request, post_id):
     if request.method == 'POST':
 
-        form = PostForm(data=request.POST)
+        comment_form = CommentForm(data=request.POST)
 
-        if form.is_valid():
+        if comment_form.is_valid():
             user = request.user
-            content = request.POST['content']
+            content = comment_form.cleaned_data['content']
             post = Post.objects.get(id=post_id)
-
+            # post.add_comment(user, content)
             Comment.objects.create(
                 author=user,
                 post=post,
                 content=content,
             )
         else:
-            return HttpResponse('Form invalid {}'.format(form.errors))
+            return HttpResponse('Form invalid {}'.format(comment_form.errors))
 
-        return redirect('post:post_detail', post_id=post_id)
+        return redirect('post:post')
     else:
-        form = PostForm()
+        comment_form = CommentForm()
         context = {
-            'form': form,
+            'comment_form': comment_form,
         }
         return render(request, 'post/post-detail.html', context)
 
 
+def comment_delete(request, post_id, comment_id):
+    """
+    1. post_detail.html 의  Comment 표현 loop 내부에 form을 생성
+    2. 요청 view(url)가 comment_delete가 되도록 함
+    3. 요청을 받은 후 적절히 삭제처리
+    4. redirect
+    """
+    if request.method == 'POST':
+        commnet = Comment.objects.get(id=comment_id)
+        commnet.delete()
+        return redirect('post:post')
+
+
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
-
-    form = PostForm()
+    comment_form = CommentForm()
 
     context = {
         'post_detail': post,
-        'form': form,
+        'comment_form': comment_form,
     }
     return render(request, 'post/post-detail.html', context)
+
+
+def post_add(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = Post(
+                author=request.user,
+                content=form.cleaned_data['content'],
+                photo=request.FILES['photo'],
+            )
+            post.save()
+            return redirect('post:post')
+
+    else:
+        form = PostForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'post/post-add.html', context)
+
+
+def post_delete(request, post_id):
+    if request.method == 'POST':
+        post = Post.objects.get(id=post_id)
+        post.delete()
+
+        return redirect('post:post')
+
+
+
+def post_like_toggle(request, post_id):
+    if not request.user.is_authenticated:
+        return redirect('post:post')
+    else:
+        if request.method == 'POST':
+            post = Post.objects.get(id=post_id)
+            post.toggle_like(user=request.user)
+            return redirect('post:post')

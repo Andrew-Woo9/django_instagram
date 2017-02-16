@@ -1,26 +1,41 @@
-<!DOCTYPE html>
+{% load staticfiles %}
+<!doctype: html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-    body {font-size: 14px;}
-    .warp_detail {width:600px; margin:0 auto;}
-    .warp_list {width:400px; margin:0 auto;}
-    .comment {background-color: #eeeeee;}
-    .content_box {width: 500px:}
-    .img_title {padding-bottom: 5px;}
-    .list_content {color: #212142; padding: 10px 5px;}
-    .list_comment {padding: 3px 8px; color: #616161;}
-    .list_like {text-align: right; padding-right: 5px; color:#2196F3;font-size: 12px; }
-    .img {width:400px;}
-    .img2_box {width:500px; margin:0 auto;}
-    .img2 {width:450px;}
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+	      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Instagram</title>
+  <link rel="stylesheet" href="{% static 'css/sprites.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/common.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/header.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/post_list.min.css' %}">
 </head>
 <body>
-{% block content %}
+  <div id="wrap">
+  	<header class="main-header">
+  		<nav class="header-nav">
+        <span class="nav-group nav-left">
+          <a href="" class="logo sprite-logo"></a>
+        </span>
 
-{% endblock %}
+        <span class="nav-group nav-center">
+          <input type="text">
+        </span>
+
+        <span class="nav-group nav-right">
+          <a href="" class="btn-header-nav sprite-explore"></a>
+          <a href="" class="btn-header-nav sprite-activity"></a>
+          <a href="" class="btn-header-nav sprite-profile"></a>
+        </span>
+  		</nav>
+  	</header>
+    <div class="content-container">
+    	{% block content %}
+    	{% endblock %}
+    </div>
+  </div>
 </body>
 </html>

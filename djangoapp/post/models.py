@@ -18,6 +18,9 @@ class Post(models.Model):
     def __str__(self):
         return 'Post{}'.format(self.id)
 
+    class Meta:
+        ordering = ('-id',)
+
     def toggle_like(self, user):
         # pl_list = Postlike.objects.filter(post=self, user=user)
         pl_list = self.postlike_set.filter(user=user)
@@ -32,7 +35,7 @@ class Post(models.Model):
         # if문 부터 else까지 한줄로 표현한 코드
         # pl_list.delete() if pl_list.exist() else Postlike.objects.create(post=self, user=user)
 
-        return self.postlike_set.object.carete(user=user) if not pl_list.exists() else pl_list.delete()
+        return self.postlike_set.create(user=user) if not pl_list.exists() else pl_list.delete()
 
     def add_comment(self, user, content):
         Comment.object.create(

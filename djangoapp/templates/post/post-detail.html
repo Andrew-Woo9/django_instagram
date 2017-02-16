@@ -1,5 +1,6 @@
 {% extends 'common/base.html' %}
 
+
 {% block content %}
 <div class="warp_detail">
     <div class="content_box">
@@ -10,16 +11,40 @@
                 {{ post_detail.content|linebreaksbr }}
             </p>
         </div>
+        <div class="list_like">{{ post_detail.like_users.count }} likes</div>
+        <div class="list_like_user">
+            <ul>
+            {% if post_detail.like_users.all %}
+                {% for user in post_detail.like_users.all %}
+                   <li>{{ user.username }}</li>
+                {% endfor %}
+            {% endif %}
+            </ul>
+        </div>
+        <div class="list_like">
+            <form action="{% url 'post:like_toggle' post_id=post_detail.id %}" method="post">{% csrf_token %}
+                <button type="submit">
+                    {% if user in post_detail.like_users.all %}
+                    unlike
+                    {% else %}
+                    like
+                    {% endif %}
+                </button>
+            </form>
+        </div>
     </div>
     <hr>
     <div>
         <p>Comments</p>
         {% if post_detail.comment_set.all %}
-            {% for comment in post_detail.comment_set.all %}
-                <ul class="comment">
-                    {{ comment.author }} {{ comment.content }}
-                </ul>
-            {% endfor %}
+        {% for comment in post_detail.comment_set.all %}
+        <ul class="comment">
+            <form action="{% url 'post:comment_delete' post_id=post_detail.id comment_id=comment.id %}" method="post">{% csrf_token %}
+                <button type="submit">삭제</button>
+            </form>
+            {{ comment.author }} {{ comment.content }}
+        </ul>
+        {% endfor %}
         {% else %}
         <p>No comment</p>
         {% endif %}
@@ -27,7 +52,7 @@
         <!-- comment form -->
 
         <form action="{% url 'post:comment_add' post_id=post_detail.id %}" method="POST">{% csrf_token %}
-            {{ form.content }}
+            {{ comment_form.content }}
             <button type="submit">Write Comment</button>
         </form>
     </div>
