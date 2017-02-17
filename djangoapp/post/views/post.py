@@ -30,7 +30,8 @@ def post_list(request):
         comment_add(request, post_id=post_id)
 
     else:
-        post = Post.objects.all()
+        post = Post.visibles.all()
+        # post = Post.objects.all()
 
         context = {
             'posts': post
@@ -52,15 +53,22 @@ def post_detail(request, post_id):
 
 
 def post_add(request):
+    def create_post_comment(file, comment_content):
+        post = Post(author=request.user, photo=file)
+        post.save()
+
+        if comment_content != '':
+            post.add_comment(user=request.user, content=comment_content)
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            post = Post(
-                author=request.user,
-                content=form.cleaned_data['content'],
-                photo=request.FILES['photo'],
-            )
-            post.save()
+            files = request.FILES.getlist('photo')
+            comment_content = form.cleaned_data.get('content', '').strip()
+
+            for file in files:
+                create_post_comment(file, comment_content)
+
             return redirect('post:post')
 
     else:
@@ -72,10 +80,17 @@ def post_add(request):
     return render(request, 'post/post-add.html', context)
 
 
-def post_delete(request, post_id):
+def post_delete(request, post_id, db_delete=False):
     if request.method == 'POST':
         post = Post.objects.get(id=post_id)
-        post.delete()
+        if post.author.id == request.user.id:
+
+            if db_delete:
+                post.delete()
+            else:
+                post.is_visible = False
+
+            post.save()
 
         return redirect('post:post')
 

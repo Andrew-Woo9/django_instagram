@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from post.models import Post
+from post.models.post import Post
 
 __all__ = (
     'Comment',

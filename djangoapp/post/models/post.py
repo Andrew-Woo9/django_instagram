@@ -2,23 +2,40 @@ from django.conf import settings
 from django.db import models
 
 from member.models import MyUser
-from post.models import Comment
+
+# from post.models import Comment
 
 __all__ = (
     'Post',
     'Postlike',
 )
 
+
+class PostManager(models.Manager):
+    def visible(self):
+        return super().get_queryset().filter(is_visible=True)
+
+
+class PostUserVisibleManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_visible=True)
+
+
 class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     photo = models.ImageField(upload_to='post', blank=True)
-    content = models.TextField(max_length=300, blank=True)
+    # content = models.TextField(max_length=300, blank=True)
     created_date = models.DateField(auto_now_add=True, null=True)
     like_users = models.ManyToManyField(
         MyUser,
         through='PostLike',
         related_name='like_post_set'
     )
+    is_visible = models.BooleanField(default=True)
+
+    objects = PostManager()
+
+    visibles = PostUserVisibleManager()
 
     def __str__(self):
         return 'Post{}'.format(self.id)
@@ -43,8 +60,8 @@ class Post(models.Model):
         return self.postlike_set.create(user=user) if not pl_list.exists() else pl_list.delete()
 
     def add_comment(self, user, content):
-        Comment.object.create(
-            user=user,
+        return self.comment_set.create(
+            author=user,
             content=content
         )
 
