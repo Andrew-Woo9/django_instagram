@@ -1,8 +1,15 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from post.models import Post, Comment
-from .form import CommentForm, PostForm
+from post.form import CommentForm, PostForm
+from post.models import Post
+
+__all__ = (
+    'post_list',
+    'post_detail',
+    'post_delete',
+    'post_like_toggle',
+    'post_add',
+)
 
 """
 post_list를 보여주는 화면을 구성
@@ -19,6 +26,7 @@ post_list를 보여주는 화면을 구성
 def post_list(request):
     if request.method == 'POST':
         post_id = request.POST['post_id']
+        from post.views import comment_add
         comment_add(request, post_id=post_id)
 
     else:
@@ -30,46 +38,6 @@ def post_list(request):
         return render(request, 'post/post_list.html', context)
 
     return redirect('post:post')
-
-
-def comment_add(request, post_id):
-    if request.method == 'POST':
-
-        comment_form = CommentForm(data=request.POST)
-
-        if comment_form.is_valid():
-            user = request.user
-            content = comment_form.cleaned_data['content']
-            post = Post.objects.get(id=post_id)
-            # post.add_comment(user, content)
-            Comment.objects.create(
-                author=user,
-                post=post,
-                content=content,
-            )
-        else:
-            return HttpResponse('Form invalid {}'.format(comment_form.errors))
-
-        return redirect('post:post')
-    else:
-        comment_form = CommentForm()
-        context = {
-            'comment_form': comment_form,
-        }
-        return render(request, 'post/post-detail.html', context)
-
-
-def comment_delete(request, post_id, comment_id):
-    """
-    1. post_detail.html 의  Comment 표현 loop 내부에 form을 생성
-    2. 요청 view(url)가 comment_delete가 되도록 함
-    3. 요청을 받은 후 적절히 삭제처리
-    4. redirect
-    """
-    if request.method == 'POST':
-        commnet = Comment.objects.get(id=comment_id)
-        commnet.delete()
-        return redirect('post:post')
 
 
 def post_detail(request, post_id):
@@ -110,7 +78,6 @@ def post_delete(request, post_id):
         post.delete()
 
         return redirect('post:post')
-
 
 
 def post_like_toggle(request, post_id):

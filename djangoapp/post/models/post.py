@@ -1,12 +1,17 @@
+from django.conf import settings
 from django.db import models
 
 from member.models import MyUser
+from post.models import Comment
 
+__all__ = (
+    'Post',
+    'Postlike',
+)
 
 class Post(models.Model):
-    author = models.ForeignKey(MyUser)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
     photo = models.ImageField(upload_to='post', blank=True)
-    # like_users =
     content = models.TextField(max_length=300, blank=True)
     created_date = models.DateField(auto_now_add=True, null=True)
     like_users = models.ManyToManyField(
@@ -52,22 +57,10 @@ class Post(models.Model):
         return self.comment_set.count()
 
 
-class Comment(models.Model):
-    author = models.ForeignKey(MyUser)
-    post = models.ForeignKey(Post)
-    content = models.TextField()
-    created_date = models.DateField(auto_now_add=True, null=True)
-
-    def __str__(self):
-        return 'post[{}]\'s Comment[{}]'.format(
-            self.post_id,
-            self.id,
-            self.author_id,
-        )
-
-
+# USER 모델을 참조할때 settings.AUTH_USER_MODEL 로 사용
+# settings 파일 안에 AUTH_USER_MODEL = 'member.MyUser' 이라고 정의하여 둠
 class Postlike(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     created_date = models.DateField(auto_now_add=True, null=True)
 
