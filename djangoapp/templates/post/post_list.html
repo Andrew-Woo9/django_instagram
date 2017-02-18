@@ -1,6 +1,7 @@
 {% extends 'common/base.html' %}
 
 {% block content %}
+
 <div class="post-list-container">
     {% for post in posts %}
     <article class="post">
@@ -22,9 +23,9 @@
             <div class="post-like-count">{{ post.like_users.count }} likes</div>
             <div class="post-like-users">
                 {% if post.like_users.all %}
-                {% for user in post.like_users.all %}
+                    {% for user in post.like_users.all %}
                 <strong>@ {{ user.username }}</strong>
-                {% if not forloop.last %}<strong>, </strong>{% endif %}
+                    {% if not forloop.last %}<strong>, </strong>{% endif %}
                 {% endfor %}
                 님이 좋아합니다.
                 {% endif %}

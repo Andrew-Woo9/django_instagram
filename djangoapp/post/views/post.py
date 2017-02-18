@@ -24,21 +24,13 @@ post_list를 보여주는 화면을 구성
 
 
 def post_list(request):
-    if request.method == 'POST':
-        post_id = request.POST['post_id']
-        from post.views import comment_add
-        comment_add(request, post_id=post_id)
+    post = Post.visibles.all()
+    # post = Post.objects.all()
 
-    else:
-        post = Post.visibles.all()
-        # post = Post.objects.all()
-
-        context = {
-            'posts': post
-        }
-        return render(request, 'post/post_list.html', context)
-
-    return redirect('post:post')
+    context = {
+        'posts': post
+    }
+    return render(request, 'post/post_list.html', context)
 
 
 def post_detail(request, post_id):
@@ -89,8 +81,7 @@ def post_delete(request, post_id, db_delete=False):
                 post.delete()
             else:
                 post.is_visible = False
-
-            post.save()
+                post.save()
 
         return redirect('post:post')
 
